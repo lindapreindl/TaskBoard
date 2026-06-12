@@ -1,3 +1,7 @@
 {
-  "todos": ["einkaufen","putzen"]
+  "$schema": "./node_modules/json-server/schema.json",
+  "todos": [
+    { "id": "1", "title": "einkaufen"},
+    { "id": "2", "title": "putzen"}
+  ]
 }
