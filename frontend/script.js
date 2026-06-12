@@ -12,21 +12,27 @@ function addTodo(){
 
 }
 
-function render (){
-    document.getElementById('todoList').innerHTML = '';
-    todos.forEach(todo => todoList.innerHTML += `<li>${todo}</li>`);
 
-}
 
 async function loadTodos(){
     const url = `http://localhost:3000/todos`;
     let response = await fetch(url);
-    todos = await response.json();
-    render();
+    let data = await response.json();
+    render(data);
+}
+
+function render (data){
+    let todos = data.map(todo => todo.title);
+
+    let todoList = document.getElementById('todoList');
+    todoList.innerHTML = '';
+
+    todos.forEach(todo => todoList.innerHTML += `<li>${todo}</li>`);
+
 }
 
 function save(){
-    fetch('url',{
+    fetch(`http://localhost:3000/todos`,{
         body: JSON.stringify(todos),
         method: 'POST'
     });
