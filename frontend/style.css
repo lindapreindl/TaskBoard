@@ -68,3 +68,36 @@ li{
 .hidden{
     display:none;
 }
+
+.archive-date{
+    cursor:pointer;
+    padding:10px;
+    border-bottom:1px solid #ddd;
+    transition:0.2s;
+}
+
+.archive-date:hover{
+    background:#f3f4f6;
+}
+
+.archive-date{
+    cursor:pointer;
+    padding:10px;
+    border-bottom:1px solid #ddd;
+    transition:0.2s;
+}
+
+.archive-date:hover{
+    background:#f3f4f6;
+}
+
+.archive-date-disabled{
+    padding:10px;
+    border-bottom:1px solid #ddd;
+
+    color:#999;
+    background:#f5f5f5;
+
+    cursor:not-allowed;
+    opacity:0.6;
+}

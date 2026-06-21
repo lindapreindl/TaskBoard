@@ -1,122 +1,26 @@
-/*let todos = [];
-
-async function loadTodos() {
-    try {
-        const response = await fetch('http://localhost:3000/todos');
-        todos = await response.json();
-        render();
-    } catch (error) {
-        console.error('Fehler beim Laden:', error);
-    }
-}
-
-function render() {
-    const todoList = document.getElementById('todoList');
-    todoList.innerHTML = '';
-
-    todos.forEach(todo => {
-        todoList.innerHTML += `
-            <li>
-                <span>${todo.title}</span>
-
-                <button onclick="editTodo(${todo.id}, '${todo.title.replace(/'/g, "\\'")}')">
-                    Bearbeiten
-                </button>
-
-                <button onclick="deleteTodo(${todo.id})">
-                    Löschen
-                </button>
-            </li>
-        `;
-    });
-}
-
-async function addTodo() {
-    const input = document.getElementById('todoinput');
-    const title = input.value.trim();
-
-    if (!title) return;
-
-    try {
-        await fetch('http://localhost:3000/todos', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                title: title
-            })
-        });
-
-        input.value = '';
-        await loadTodos();
-
-    } catch (error) {
-        console.error('Fehler beim Speichern:', error);
-    }
-}
-
-async function deleteTodo(id) {
-    try {
-        await fetch(`http://localhost:3000/todos/${id}`, {
-            method: 'DELETE'
-        });
-
-        await loadTodos();
-
-    } catch (error) {
-        console.error('Fehler beim Löschen:', error);
-    }
-}
-
-async function editTodo(id, currentTitle) {
-    const newTitle = prompt('Neuen Text eingeben:', currentTitle);
-
-    if (newTitle === null) return;
-
-    if (newTitle.trim() === '') return;
-
-    try {
-        await fetch(`http://localhost:3000/todos/${id}`, {
-            method: 'PATCH',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                title: newTitle.trim()
-            })
-        });
-
-        await loadTodos();
-
-    } catch (error) {
-        console.error('Fehler beim Bearbeiten:', error);
-    }
-}
-
-window.onload = () => {
-    loadTodos();
-
-    document
-        .getElementById('todoinput')
-        .addEventListener('keydown', function (event) {
-
-            if (event.key === 'Enter') {
-                addTodo();
-            }
-        });
-};
-*/
-
-
 const API_URL = "http://localhost:3000/todos";
 
 let todos = [];
 let selectedDate = "";
 
+// Initialisiert die Anwendung beim Laden der Seite
 window.onload = () => {
 
+    // Heutiges Datum ermitteln
     const today = new Date().toISOString().split("T")[0];
+
+    // Erlaubten Datumsbereich auf ±7 Tage begrenzen
+    const minDate = new Date();
+    minDate.setDate(minDate.getDate() - 7);
+
+    const maxDate = new Date();
+    maxDate.setDate(maxDate.getDate() + 7);
+
+    document.getElementById("datePicker").min =
+        minDate.toISOString().split("T")[0];
+
+    document.getElementById("datePicker").max =
+        maxDate.toISOString().split("T")[0];
 
     selectedDate = today;
 
@@ -130,11 +34,12 @@ window.onload = () => {
             loadTodos();
         });
 
+    // Enter-Taste fügt eine neue Aufgabe hinzu
     document
         .getElementById("todoinput")
         .addEventListener("keydown", (event) => {
 
-            if(event.key === "Enter"){
+            if (event.key === "Enter") {
                 addTodo();
             }
         });
@@ -143,19 +48,21 @@ window.onload = () => {
     loadTodos();
 };
 
-async function loadTodos(){
+// Lädt alle Aufgaben des aktuell ausgewählten Datums
+async function loadTodos() {
 
     const response = await fetch(API_URL);
     const data = await response.json();
 
     todos = data.filter(todo => todo.date === selectedDate);
 
-    todos.sort((a,b) => a.completed - b.completed);
+    todos.sort((a, b) => a.completed - b.completed);
 
     render();
 }
 
-function render(){
+// Zeigt die geladenen Aufgaben in der Aufgabenliste an
+function render() {
 
     const list = document.getElementById("todoList");
 
@@ -169,7 +76,7 @@ function render(){
                 <input
                     type="checkbox"
                     ${todo.completed ? "checked" : ""}
-                    onchange="toggleTodo(${todo.id}, ${todo.completed})"
+                    onchange="toggleTodo('${todo.id}', ${todo.completed})"
                 >
 
                 <span class="${todo.completed ? "completed" : ""}">
@@ -189,91 +96,104 @@ function render(){
     });
 }
 
-async function addTodo(){
+// Erstellt eine neue Aufgabe für das ausgewählte Datum
+async function addTodo() {
 
     const input = document.getElementById("todoinput");
 
     const title = input.value.trim();
 
-    if(!title){
+    if (!title) {
         return;
     }
 
     await fetch(API_URL, {
-        method:"POST",
-        headers:{
-            "Content-Type":"application/json"
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
         },
-        body:JSON.stringify({
-            title:title,
-            completed:false,
-            date:selectedDate
+        body: JSON.stringify({
+            title: title,
+            completed: false,
+            date: selectedDate
         })
     });
 
     input.value = "";
 
-    loadTodos();
+    await loadTodos();
 }
 
-async function deleteTodo(id){
+// Löscht eine Aufgabe nach Bestätigung durch den Benutzer
+async function deleteTodo(id) {
 
-    await fetch(`${API_URL}/${id}`,{
-        method:"DELETE"
+    const confirmed = confirm(
+        "Aufgabe wirklich löschen?"
+    );
+
+    if (!confirmed) {
+        return;
+    }
+
+    await fetch(`${API_URL}/${id}`, {
+        method: "DELETE"
     });
 
-    loadTodos();
+    await loadTodos();
 }
 
-async function editTodo(id){
+// Bearbeitet den Titel einer bestehenden Aufgabe
+async function editTodo(id) {
 
     const todo = todos.find(
-    t => String(t.id) === String(id)
-);
+        t => String(t.id) === String(id)
+    );
 
-if (!todo) {
-    alert("Aufgabe nicht gefunden");
-    return;
-}
+    if (!todo) {
+        alert("Aufgabe nicht gefunden");
+        return;
+    }
 
     const newTitle = prompt(
         "Neuer Titel:",
         todo.title
     );
 
-    if(!newTitle){
+    if (!newTitle || !newTitle.trim()) {
         return;
     }
 
-    await fetch(`${API_URL}/${id}`,{
-        method:"PATCH",
-        headers:{
-            "Content-Type":"application/json"
+    await fetch(`${API_URL}/${id}`, {
+        method: "PATCH",
+        headers: {
+            "Content-Type": "application/json"
         },
-        body:JSON.stringify({
-            title:newTitle
+        body: JSON.stringify({
+            title: newTitle.trim()
         })
     });
 
-    loadTodos();
+    await loadTodos();
 }
 
-async function toggleTodo(id, completed){
+// Ändert den Erledigt-Status einer Aufgabe
+async function toggleTodo(id, completed) {
 
-    await fetch(`${API_URL}/${id}`,{
-        method:"PATCH",
-        headers:{
-            "Content-Type":"application/json"
+    await fetch(`${API_URL}/${id}`, {
+        method: "PATCH",
+        headers: {
+            "Content-Type": "application/json"
         },
-        body:JSON.stringify({
-            completed:!completed
+        body: JSON.stringify({
+            completed: !completed
         })
     });
 
-    loadTodos();
+    await loadTodos();
 }
 
-async function showArchive(){
+// Öffnet bzw. schließt das Archiv und zeigt verfügbare Archivdaten an
+async function showArchive() {
 
     const container =
         document.getElementById("archiveContainer");
@@ -281,10 +201,35 @@ async function showArchive(){
     const list =
         document.getElementById("archiveList");
 
-    container.classList.toggle("hidden");
+    const todoList =
+        document.getElementById("todoList");
+
+    const addTaskContainer =
+        document.getElementById("addTaskContainer");
+
+    const isOpening =
+        container.classList.contains("hidden");
+
+    if (isOpening) {
+
+        container.classList.remove("hidden");
+
+        todoList.classList.add("hidden");
+
+        addTaskContainer.classList.add("hidden");
+
+    } else {
+
+        container.classList.add("hidden");
+
+        todoList.classList.remove("hidden");
+
+        addTaskContainer.classList.remove("hidden");
+
+        return;
+    }
 
     const response = await fetch(API_URL);
-
     const data = await response.json();
 
     const today = new Date();
@@ -295,32 +240,90 @@ async function showArchive(){
         data.map(todo => todo.date)
     )];
 
+    dates.sort((a, b) => new Date(b) - new Date(a));
+
     dates.forEach(date => {
 
         const currentDate = new Date(date);
 
-        const diff =
-            (today - currentDate) /
-            (1000 * 60 * 60 * 24);
+        const taskCount =
+            data.filter(todo => todo.date === date).length;
 
-        if(diff > 0 && diff <= 7){
+        const diffDays = Math.floor(
+            (currentDate - today) /
+            (1000 * 60 * 60 * 24)
+        );
 
-            list.innerHTML += `
-                <li>${date}</li>
-            `;
-        }
+        const isClickable =
+            diffDays >= -7 &&
+            diffDays <= 7;
+
+        list.innerHTML += `
+            <li
+                class="${
+                    isClickable
+                        ? "archive-date"
+                        : "archive-date-disabled"
+                }"
+                ${
+                    isClickable
+                        ? `onclick="loadArchiveDate('${date}')"`
+                        : ""
+                }
+            >
+                ${formatDate(date)}
+                (${taskCount} Aufgaben)
+            </li>
+        `;
     });
 }
 
-async function cleanupOldTodos(){
+// Lädt die Aufgaben eines ausgewählten Archivdatums
+async function loadArchiveDate(date) {
+
+    selectedDate = date;
+
+    document.getElementById("datePicker").value = date;
+
+    document
+        .getElementById("archiveContainer")
+        .classList.add("hidden");
+
+    document
+        .getElementById("todoList")
+        .classList.remove("hidden");
+
+    document
+        .getElementById("addTaskContainer")
+        .classList.remove("hidden");
+
+    await loadTodos();
+}
+
+// Formatiert ein Datum in das österreichische Datumsformat
+function formatDate(dateString) {
+
+    const date = new Date(dateString);
+
+    return date.toLocaleDateString(
+        "de-AT",
+        {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric"
+        }
+    );
+}
+
+// Entfernt Aufgaben, die älter als sieben Tage sind
+async function cleanupOldTodos() {
 
     const response = await fetch(API_URL);
-
     const data = await response.json();
 
     const today = new Date();
 
-    data.forEach(async(todo)=>{
+    data.forEach(async (todo) => {
 
         const todoDate = new Date(todo.date);
 
@@ -328,10 +331,10 @@ async function cleanupOldTodos(){
             (today - todoDate) /
             (1000 * 60 * 60 * 24);
 
-        if(diff > 7){
+        if (diff > 7) {
 
-            await fetch(`${API_URL}/${todo.id}`,{
-                method:"DELETE"
+            await fetch(`${API_URL}/${todo.id}`, {
+                method: "DELETE"
             });
         }
     });
