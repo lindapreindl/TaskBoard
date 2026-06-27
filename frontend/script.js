@@ -3,13 +3,13 @@ const API_URL = "http://localhost:3000/todos";
 let todos = [];
 let selectedDate = "";
 
-// Initialisiert die Anwendung beim Laden der Seite
+// initializes the app when loading the site
 window.onload = () => {
 
-    // Heutiges Datum ermitteln
+    // determines the current date
     const today = new Date().toISOString().split("T")[0];
 
-    // Erlaubten Datumsbereich auf ±7 Tage begrenzen
+    // restricts date range to +/- 7 days
     const minDate = new Date();
     minDate.setDate(minDate.getDate() - 7);
 
@@ -34,7 +34,7 @@ window.onload = () => {
             loadTodos();
         });
 
-    // Enter-Taste fügt eine neue Aufgabe hinzu
+    // enter button adds also a new to do
     document
         .getElementById("todoinput")
         .addEventListener("keydown", (event) => {
@@ -48,7 +48,7 @@ window.onload = () => {
     loadTodos();
 };
 
-// Lädt alle Aufgaben des aktuell ausgewählten Datums
+// loads all tasks of the chosen date
 async function loadTodos() {
 
     const response = await fetch(API_URL);
@@ -61,7 +61,7 @@ async function loadTodos() {
     render();
 }
 
-// Zeigt die geladenen Aufgaben in der Aufgabenliste an
+// shows the tasks loaded as a list
 function render() {
 
     const list = document.getElementById("todoList");
@@ -84,11 +84,11 @@ function render() {
                 </span>
 
                 <button onclick="editTodo('${todo.id}')">
-                    Bearbeiten
+                    edit
                 </button>
 
                 <button onclick="deleteTodo('${todo.id}')">
-                    Löschen
+                    delete
                 </button>
 
             </li>
@@ -96,7 +96,7 @@ function render() {
     });
 }
 
-// Erstellt eine neue Aufgabe für das ausgewählte Datum
+// creates a new task for the chosen date
 async function addTodo() {
 
     const input = document.getElementById("todoinput");
@@ -124,11 +124,11 @@ async function addTodo() {
     await loadTodos();
 }
 
-// Löscht eine Aufgabe nach Bestätigung durch den Benutzer
+// deletes a task after confirmation of the user
 async function deleteTodo(id) {
 
     const confirmed = confirm(
-        "Aufgabe wirklich löschen?"
+        "Delete this task irretrievably?"
     );
 
     if (!confirmed) {
@@ -142,7 +142,7 @@ async function deleteTodo(id) {
     await loadTodos();
 }
 
-// Bearbeitet den Titel einer bestehenden Aufgabe
+// changes the title alias text of the task
 async function editTodo(id) {
 
     const todo = todos.find(
@@ -150,12 +150,12 @@ async function editTodo(id) {
     );
 
     if (!todo) {
-        alert("Aufgabe nicht gefunden");
+        alert("Task not found");
         return;
     }
 
     const newTitle = prompt(
-        "Neuer Titel:",
+        "New task:",
         todo.title
     );
 
@@ -176,7 +176,7 @@ async function editTodo(id) {
     await loadTodos();
 }
 
-// Ändert den Erledigt-Status einer Aufgabe
+// changes completion state of a task
 async function toggleTodo(id, completed) {
 
     await fetch(`${API_URL}/${id}`, {
@@ -192,7 +192,7 @@ async function toggleTodo(id, completed) {
     await loadTodos();
 }
 
-// Öffnet bzw. schließt das Archiv und zeigt verfügbare Archivdaten an
+// opens the archive
 async function showArchive() {
 
     const container =
@@ -272,13 +272,13 @@ async function showArchive() {
                 }
             >
                 ${formatDate(date)}
-                (${taskCount} Aufgaben)
+                (${taskCount} tasks)
             </li>
         `;
     });
 }
 
-// Lädt die Aufgaben eines ausgewählten Archivdatums
+// loads the tasks of a date chosen from the archive
 async function loadArchiveDate(date) {
 
     selectedDate = date;
@@ -300,7 +300,7 @@ async function loadArchiveDate(date) {
     await loadTodos();
 }
 
-// Formatiert ein Datum in das österreichische Datumsformat
+// formats dates into european date formats
 function formatDate(dateString) {
 
     const date = new Date(dateString);
@@ -315,7 +315,7 @@ function formatDate(dateString) {
     );
 }
 
-// Entfernt Aufgaben, die älter als sieben Tage sind
+// deletes tasks older than seven days
 async function cleanupOldTodos() {
 
     const response = await fetch(API_URL);
