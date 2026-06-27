@@ -6,7 +6,7 @@
 }
 
 body{
-    background:#f3f4f6;
+    background:#97abd3;
     display:flex;
     justify-content:center;
     padding:40px;
@@ -32,10 +32,18 @@ header{
     gap:10px;
 }
 
+#datePicker{
+    cursor: pointer;
+}
+
 .add-task{
     display:flex;
     gap:10px;
     margin-bottom:20px;
+}
+
+.plusText{
+    display: none;
 }
 
 input[type="text"]{
@@ -100,4 +108,19 @@ li{
 
     cursor:not-allowed;
     opacity:0.6;
+}
+
+/*
+Source - https://stackoverflow.com/a/16106788
+Posted by Anselm, modified by community. See post 'Timeline' for change history
+Retrieved 2026-06-27, License - CC BY-SA 4.0
+*/
+
+::-webkit-datetime-edit { display: none; }
+::-webkit-calendar-picker-indicator { cursor: pointer; padding-left: 10px; padding-right: 10px;}
+
+@media (min-width: 400px){
+
+    .addTaskText{display: none;}
+    .plusText{display: block;}
 }

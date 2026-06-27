@@ -16,7 +16,7 @@
 
             <div class="top-controls">
                 <input type="date" id="datePicker">
-                <button onclick="showArchive()">Archiv</button>
+                <button onclick="showArchive()">Archive</button>
             </div>
         </header>
 
@@ -24,18 +24,19 @@
             <input
                 type="text"
                 id="todoinput"
-                placeholder="Neue Aufgabe..."
+                placeholder="New task..."
             >
 
             <button onclick="addTodo()">
-                Hinzufügen
+                <p class="addTaskText">Add Task</p>
+                <p class="plusText">+</p>
             </button>
         </div>
 
         <ul id="todoList"></ul>
 
         <div id="archiveContainer" class="hidden">
-            <h2>Archiv</h2>
+            <h2>Archive</h2>
             <ul id="archiveList"></ul>
         </div>
 
