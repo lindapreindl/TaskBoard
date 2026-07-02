@@ -160,7 +160,7 @@ async function editTodo(id) {
     }
 
     const newTitle = prompt(
-        "New task:",
+        "Edit task:",
         todo.title
     );
 
