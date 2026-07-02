@@ -36,6 +36,10 @@ header{
     cursor: pointer;
 }
 
+#pointButton{
+    display: none;
+}
+
 .add-task{
     display:flex;
     gap:10px;
@@ -56,6 +60,17 @@ button{
     padding:10px 15px;
 }
 
+button img{
+    height: 20px;
+    width: 20px;
+}
+
+.editButton{
+    border: none;
+    background-color: inherit;
+    padding: 0px;
+}
+
 ul{
     list-style:none;
 }
@@ -63,6 +78,7 @@ ul{
 li{
     display:flex;
     align-items:center;
+    justify-content: space-between;
     gap:10px;
     padding:10px;
     border-bottom:1px solid #ddd;
@@ -123,11 +139,14 @@ Retrieved 2026-06-27, License - CC BY-SA 4.0
 @media (max-width: 500px){
 
     h1 {font-size: 20px;}
+    
 }
 
 
-@media (max-width: 400px){
+@media (max-width: 420px){
 
     .addTaskText{display: none;}
     .plusText{display: block;}
+    #archiveButton{display: none;}
+    #pointButton{display: block;}
 }

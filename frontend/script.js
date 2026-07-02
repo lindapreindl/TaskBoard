@@ -72,6 +72,7 @@ function render() {
 
         list.innerHTML += `
             <li>
+            <div>
 
                 <input
                     type="checkbox"
@@ -83,13 +84,17 @@ function render() {
                     ${todo.title}
                 </span>
 
-                <button onclick="editTodo('${todo.id}')">
-                    edit
+            </div>
+            <div>
+
+                <button class="editButton" onclick="editTodo('${todo.id}')">
+                    <img src="./img/edit.png" alt="">
                 </button>
 
-                <button onclick="deleteTodo('${todo.id}')">
-                    delete
+                <button class="editButton" onclick="deleteTodo('${todo.id}')">
+                    <img src="./img/delete.png" alt="">
                 </button>
+            </div>
 
             </li>
         `;
